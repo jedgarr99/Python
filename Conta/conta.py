@@ -62,12 +62,19 @@ class CuentaConta:
     
     
 class PolizaContable:
-    def _init_(self, numPoliza, descripcion):
-        self.numPoliza=numPoliza
+    def _init_(self, fecha, descripcion):
+        self.fecha=fecha
         self.descripcion=descripcion
-    
+        self.colMovtos =[]
+    def cargo(self,numCta,monto) :
+        pass
+    def abono(self,numCta,monto):
+        pass
     def _str_(self):
-        return str(self.numPoliza)+"   "+str(self.descripcion)
+        strRes = self.fecha +"  " + self.descripcion
+        for m in self.colMovtos:
+            strRes += str(m)
+            return strRes
     
     def altaMovimientoContable(self, nat, monto):
         print('se pasa la chamba a Movimiento COntable '+str(nat)+"   " +str(monto)) 
