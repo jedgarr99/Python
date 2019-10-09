@@ -30,6 +30,31 @@ class Conta:
         else:
             raise Exception('Error al dar de alta la cuenta num '+ str(numCta))
            
+    def registraPoliza(self, poliza):
+        # verificamos que suma de cargos sea igual a suma de ahorros
+        sc=0
+        sa=0
+        for m in poliza.colMovtos:
+            if m.tipo== "A":
+                sa+=m.monto
+            elif m.tipo=="C":
+                sc+=m.monto
+            else:
+                raise Exception("Tipo de movimiento inválido " + str(m.monto))
+        if sa!= sc:
+            raise Exception("Póliza "+str(poliza)+" ==== DESBALANCEADA")
+        # verificamos que todas las cuentas de los movimientos de la pol
+        for m in poliza.colMovtos:
+            numParte=m.nomCta // 100000
+            if 1<= numParte<=5:
+                # la parte contable erroja una exception si la cuenta no existe
+                self.listaPartes[numParte].verificaExistencia(m.numCta)
+            else:
+                raise Exception("La cuenta del movimiento " +str(m) +" es inválida.")
+        # registramos los movimientos
+        for m in poliza.colMovtos:
+            numParte=m.nomCta // 100000
+           
 class ParteConta:
     def __init__(self, numParte, nombreParte, natParte):
         self.num=numParte
@@ -37,6 +62,7 @@ class ParteConta:
         # falta validar
         self.nat= natParte
         self.colCtas={}
+        self.colMovtos=[]
        
         def __str__(self):
             strRes= 'Parte Contable: '+str(self.num)+' '+self.nombre+' '+self.nat+')'
@@ -50,6 +76,13 @@ class ParteConta:
                 self.colCtas[str(numCta)]=CuentaConta(numCta, nombreCta, natCta)
             else:
                 raise Exception('La cuenta ' +str(numCta)+' ya existe')
+               
+        def verificaExistencia(self,numCta):
+            if self.colCtas.get(numCta)==None:
+                raise Exception("La cuenta " +str(numCta)+ " no existe")
+               
+        def registraMovto(self, m):
+            self.colMovtos.append(MovtoConta(self.numPoliza, self.numCta, m, self.nat))
  
 class CuentaConta:
     def __init__(self, numCta, nombreCta, natCta):
@@ -60,24 +93,38 @@ class CuentaConta:
     def __str__(self):
         return 'Cuenta Contable: '+str(self.num)+' '+self.nombre+' '+self.nat+')'
     
-    
-class PolizaContable:
-    def _init_(self, fecha, descripcion):
+class PolizaContable:  
+   
+    def __init__(self, numPoliza, fecha, descripcion):
+        self.numPoliza=numPoliza
         self.fecha=fecha
-        self.descripcion=descripcion
-        self.colMovtos =[]
-    def cargo(self,numCta,monto) :
-        pass
-    def abono(self,numCta,monto):
-        pass
-    def _str_(self):
-        strRes = self.fecha +"  " + self.descripcion
+        self.descripcion =descripcion
+        self.colMovtos=[]
+       
+    def cargo(self, numCta, monto):
+        self.colMovtos.append(MovtoConta(self.numPoliza, numCta, monto, 'C'))
+       
+    def abono(self, numCta, monto):
+        self.colMovtos.append(MovtoConta(self.numPoliza, numCta, monto, 'A'))
+   
+    def __str__(self):
+        strRes=self.fecha+" "+self.descripcion+'\n'
         for m in self.colMovtos:
-            strRes += str(m)
-            return strRes
-    
-    def altaMovimientoContable(self, nat, monto):
-        print('se pasa la chamba a Movimiento COntable '+str(nat)+"   " +str(monto)) 
+            strRes+=str(m)
+        return strRes
+       
+class MovtoConta:
+    def __init__(self, numPoliza, numCta, monto, c_a):
+        self.numPoliza=numPoliza
+        self.numCta=numCta
+        self.monto=monto
+        self.tipo= c_a
+       
+    def __str__(self):
+        strRes=str(self.numPoliza) + ' ' + str(self.numCta)
+        strRes+='                  ' if self.tipo=='A' else " "
+        strRes+= str(self.monto)
+        return strRes 
        
          
 #=========== Programa Principal ==========
