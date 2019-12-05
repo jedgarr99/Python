@@ -1,0 +1,62 @@
+--   Definici?n de la base de datos de personas.
+
+--	ESQUEMA RELACIONAL DE LA BASE DE DATOS:
+--
+--	empresa(IdEmpresa(PK), NomEmpresa, domicilio)
+--	persona(IdPersona(PK), NomPersona, edad, idEmpresa(FK))
+--	ahorro(IdAhorro(PK), monto, mes, a?o, idPersona(FK))
+--	sueldo(IdSueldo(PK), monto, idPersona(FK))
+
+--	DEFINICI?N DE TABLAS
+
+create table empresa
+	(IdEmpresa	smallint  primary key,
+	NomEmpresa	char(30),
+	domicilio	char(30));
+
+create table persona
+	(IdPersona	smallint  primary key,
+	NomPersona	char(30),
+	edad	 	smallint,
+	idEmpresa 	smallint  references empresa);
+
+create table ahorro
+	(IdAhorro	smallint  primary key,
+	monto		int,
+	mes		char(30),
+	a?o		smallint,
+	idPersona 	smallint  references persona);
+
+create table sueldoBase
+	(idSueldo	smallint  primary key,
+	monto		int,
+	idPersona 	smallint  references persona);
+-- Tuplas de la tabla empresa
+
+INSERT INTO empresa VALUES(101,'IBM','san angel #3');     
+INSERT INTO empresa VALUES(102,'HP','portales #4');     
+INSERT INTO empresa VALUES(103,'TATA','rio churubusco #5');    
+
+-- Tuplas de la tabla persona
+
+INSERT INTO persona VALUES(101,'Rodolfo',35,101);     
+INSERT INTO persona VALUES(102,'Patricio',45,102);     
+INSERT INTO persona VALUES(103,'Luis',25,103);     
+INSERT INTO persona VALUES(104,'Pedro',27,101);     
+INSERT INTO persona VALUES(105,'Joel',55,102);     
+
+-- Tuplas de la tabla ahorro
+
+INSERT INTO ahorro VALUES(110,100,'mayo',2018,101);     
+INSERT INTO ahorro VALUES(111,50,'mayo',2018,102);     
+INSERT INTO ahorro VALUES(112,1000,'febrero',2018,101);        
+INSERT INTO ahorro VALUES(113,500,'abril',2018,103);       
+INSERT INTO ahorro VALUES(114,40,'abril',2018,104); 
+
+-- Tuplas de la tabla sueldo
+
+INSERT INTO sueldoBase VALUES(11,7500,101);     
+INSERT INTO sueldoBase VALUES(12,8500,102);     
+INSERT INTO sueldoBase VALUES(13,9500,103);
+INSERT INTO sueldoBase VALUES(14,18500,104);
+INSERT INTO sueldoBase VALUES(15,5500,105); 
